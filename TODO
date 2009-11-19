@@ -1,0 +1,5 @@
+* Create a design doc based on the forum post ( http://forums.auroraux.org/viewtopic.php?f=2&t=9 )
+* Use POE::Component::IRC for the irc network
+* Use WWW::Mechanize for phpbb interaction (possibly extend WWW::Mechanize::Plugin::phpBB)
+* Create a Makefile.PL
+* Start preparing for unit tests (created under root directory t/)
