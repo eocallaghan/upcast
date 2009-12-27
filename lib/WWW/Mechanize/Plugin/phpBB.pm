@@ -4,8 +4,7 @@ use 5.006;
 use strict;
 use warnings;
 
-our $VERSION = '0.02';
-
+our $VERSION = '0.03';
 use Log::Log4perl qw(:easy);
 use HTML::TreeBuilder;
 
@@ -49,7 +48,8 @@ sub login {
 
     eval {
         DEBUG "Finding 'Login' link ";
-        my $link = $mech->find_link(url_regex => qr/login\.php/);
+	# extended regex to recognize ucp.php?mode style urls
+        my $link = $mech->find_link(url_regex => qr/(login\.php|ucp\.php\?mode=login)/);
         die "Cannot find login.php link" unless defined $link;
 
         my $url = $link->url();
@@ -58,7 +58,10 @@ sub login {
         $mech->follow_link(url => $url);
 
         DEBUG "Submitting login credentials for user '$user'";
+	# Selecting the form by form_id without it phpBB.pm selected the search form
+	# located in the upper right corner of the screen.
         $mech->submit_form(
+	    form_id => 'login',
             fields => {
                 username => $user,
                 password => $password,
@@ -66,8 +69,9 @@ sub login {
             button => "login",
         );
 
+	# extended regex to recognize ucp.php?mode style urls
         $link = $mech->find_link(
-            url_regex => qr/\Qlogin.php?logout=true\E/);
+            url_regex => qr/(login\.php\?logout=true|ucp\.php\?mode=logout)/);
         die "Login failed (wrong credentials?)" unless defined $link;
     };
 
